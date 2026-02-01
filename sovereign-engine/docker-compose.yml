@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  sovereign-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sovereign-engine
+    ports:
+      - "8888:8888"
+    environment:
+      - PORT=8888
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8888/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - sovrenai-network
+
+networks:
+  sovrenai-network:
+    external: true

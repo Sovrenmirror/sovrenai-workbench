@@ -81,7 +81,7 @@ app.use(express.json({ limit: '50mb' })); // Support large documents (up to ~50,
 app.use(express.static(resolve(__dirname, '../../frontend/public')));
 
 // Serve React workbench frontend (Phase 5)
-const workbenchPath = resolve(__dirname, '../../frontend-react/dist');
+const workbenchPath = resolve(__dirname, '../frontend-react/dist');
 console.log('[Phase 5] React workbench serving from:', workbenchPath);
 
 // Serve static assets
@@ -3053,12 +3053,134 @@ app.get('/api/v1/diagnostic', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
+// SOVEREIGN REASONING ENGINE API
+// ═══════════════════════════════════════════════════════════════
+
+import { sovereignClient, sovereignReason, sovereignClassify } from './services/sovereign-client.js';
+
+/**
+ * POST /api/v1/sovereign/reason - Execute 8-stage reasoning
+ */
+app.post('/api/v1/sovereign/reason', requireAuth, async (req, res) => {
+  try {
+    const { input, provider, model } = req.body;
+
+    if (!input) {
+      return res.status(400).json({
+        success: false,
+        error: 'Input is required'
+      });
+    }
+
+    const result = await sovereignReason(input, { provider, model });
+
+    res.json({
+      success: true,
+      result
+    });
+  } catch (error: any) {
+    console.error('[Sovereign Engine] Reasoning failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Reasoning failed'
+    });
+  }
+});
+
+/**
+ * POST /api/v1/sovereign/classify - Classify text (lightweight)
+ */
+app.post('/api/v1/sovereign/classify', requireAuth, async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({
+        success: false,
+        error: 'Text is required'
+      });
+    }
+
+    const result = await sovereignClassify(text);
+
+    res.json({
+      success: true,
+      result
+    });
+  } catch (error: any) {
+    console.error('[Sovereign Engine] Classification failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Classification failed'
+    });
+  }
+});
+
+/**
+ * GET /api/v1/sovereign/truth-floor - Get Truth Floor axioms
+ */
+app.get('/api/v1/sovereign/truth-floor', requireAuth, async (req, res) => {
+  try {
+    const result = await sovereignClient.getTruthFloor();
+    res.json({
+      success: true,
+      result
+    });
+  } catch (error: any) {
+    console.error('[Sovereign Engine] Failed to get Truth Floor:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to get Truth Floor'
+    });
+  }
+});
+
+/**
+ * GET /api/v1/sovereign/tiers - Get 13 Truth Tiers information
+ */
+app.get('/api/v1/sovereign/tiers', requireAuth, async (req, res) => {
+  try {
+    const result = await sovereignClient.getTiers();
+    res.json({
+      success: true,
+      result
+    });
+  } catch (error: any) {
+    console.error('[Sovereign Engine] Failed to get tiers:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to get tiers'
+    });
+  }
+});
+
+/**
+ * GET /api/v1/sovereign/health - Check Sovereign Engine health
+ */
+app.get('/api/v1/sovereign/health', requireAuth, async (req, res) => {
+  try {
+    const result = await sovereignClient.health();
+    res.json({
+      success: true,
+      available: true,
+      result
+    });
+  } catch (error: any) {
+    res.json({
+      success: true,
+      available: false,
+      error: error.message || 'Sovereign Engine not available'
+    });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
 // REACT WORKBENCH SPA FALLBACK (Phase 5)
 // ═══════════════════════════════════════════════════════════════
 
 // Catch-all route for React client-side routing
 app.get('/workbench/*', (req, res) => {
-  res.sendFile(resolve(__dirname, '../../frontend-react/dist/index.html'));
+  res.sendFile(resolve(__dirname, '../frontend-react/dist/index.html'));
 });
 
 // ═══════════════════════════════════════════════════════════════

@@ -40,16 +40,17 @@ export class ConversationalAgent implements Agent {
 
   /**
    * Patterns that indicate conversational intent
+   * These are flexible to allow natural variations like "how are you today"
    */
   private conversationalPatterns = [
-    /^(hi|hello|hey|howdy|greetings|good\s*(morning|afternoon|evening|day))[\s!.,?]*$/i,
-    /^how\s*(are\s*you|('s\s*it\s*going)|do\s*you\s*do)[\s!.,?]*$/i,
-    /^what('s)?\s*up[\s!.,?]*$/i,
-    /^(thanks|thank\s*you|thx|ty)[\s!.,?]*$/i,
-    /^(bye|goodbye|see\s*you|later|cya)[\s!.,?]*$/i,
+    /^(hi|hello|hey|howdy|greetings|good\s*(morning|afternoon|evening|day))(\s+\w+)*[\s!.,?]*$/i,
+    /^how\s*(are\s*you|('s\s*it\s*going)|do\s*you\s*do)(\s+\w+)*[\s!.,?]*$/i,
+    /^what('s)?\s*up(\s+\w+)*[\s!.,?]*$/i,
+    /^(thanks|thank\s*you|thx|ty)(\s+\w+)*[\s!.,?]*$/i,
+    /^(bye|goodbye|see\s*you|later|cya)(\s+\w+)*[\s!.,?]*$/i,
     /^(yes|no|yeah|nope|yep|ok|okay|sure|alright)[\s!.,?]*$/i,
     /^(nice|great|awesome|cool|interesting)[\s!.,?]*$/i,
-    /^(please|help)[\s!.,?]*$/i,
+    /^(please|help)(\s+\w+)*[\s!.,?]*$/i,
     /^who\s*are\s*you[\s!.,?]*$/i,
     /^what\s*(can\s*you\s*do|are\s*you)[\s!.,?]*$/i,
     /^tell\s*me\s*(about\s*yourself|more)[\s!.,?]*$/i,
@@ -60,23 +61,10 @@ export class ConversationalAgent implements Agent {
    * Check if this agent can handle the given context
    */
   canHandle(context: AgentContext): boolean {
-    // Get the user's message from the context
-    const message = context.classificationResult.original_query || '';
-    const trimmed = message.trim();
-
-    // Handle short conversational messages
-    if (trimmed.length < 50) {
-      if (this.conversationalPatterns.some(p => p.test(trimmed))) {
-        return true;
-      }
-    }
-
-    // Check classification tier - Tier 11 is conversational
-    if (context.classificationResult.tier === 11) {
-      return true;
-    }
-
-    return false;
+    // This agent handles conversational queries
+    // Since we can't access the original message from context alone,
+    // we rely on tier classification. T5-T6 are opinions/interpretations (conversational)
+    return context.classificationResult.tier >= 5 && context.classificationResult.tier <= 6;
   }
 
   /**
@@ -84,7 +72,7 @@ export class ConversationalAgent implements Agent {
    */
   async execute(context: AgentContext, input: any): Promise<AgentResult> {
     const startTime = Date.now();
-    const message = input.userQuery || input.query || context.classificationResult.original_query || '';
+    const message = input.userQuery || input.query || '';
 
     try {
       const response = await this.generateResponse(message, context);

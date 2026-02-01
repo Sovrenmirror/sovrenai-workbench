@@ -9,10 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, '../../.env') });
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
+// JWT_SECRET is required - fail fast if not configured
+if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required. See .env.example for configuration.');
 }
+const JWT_SECRET: string = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 export interface JWTPayload {

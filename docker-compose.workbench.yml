@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  workbench:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sovrenai-workbench
+    restart: unless-stopped
+    ports:
+      - "3750:3750"
+    environment:
+      - NODE_ENV=production
+      - PORT=3750
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SERP_API_KEY=${SERP_API_KEY}
+      - JWT_SECRET=${JWT_SECRET:-sovren-dev-secret-change-in-production}
+      - SOVEREIGN_ENGINE_URL=http://sovereign-engine:8888
+    volumes:
+      - workbench-data:/app/data
+    networks:
+      - sovrenai-network
+    depends_on:
+      - sovereign-engine
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3750/api/v1/diagnostic', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+  sovereign-engine:
+    build:
+      context: ./sovereign-engine
+      dockerfile: Dockerfile
+    container_name: sovereign-engine
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      - PORT=8888
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    networks:
+      - sovrenai-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8888/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  workbench-data:
+    driver: local
+
+networks:
+  sovrenai-network:
+    driver: bridge
