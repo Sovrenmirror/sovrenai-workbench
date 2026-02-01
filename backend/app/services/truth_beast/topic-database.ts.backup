@@ -1,0 +1,699 @@
+/**
+ * Topic Database - Domain/Subject Classification
+ * Separates WHAT we're talking about from HOW we express it
+ *
+ * Phase 1: Auto-populated from token registry semantic_patterns
+ */
+
+export interface Topic {
+  id: string;                    // "physics_constants"
+  name: string;                  // "Physical Constants"
+  domain: string;                // "physics"
+  keywords: string[];            // ["speed of light", "planck constant"]
+  related_tokens: string[];      // ["PhysicalConstantTT", "UniversalFactTT"]
+  verification_priority: number; // 0.0-1.0 (how critical to verify)
+  description: string;           // What this topic covers
+}
+
+/**
+ * Topic detection result
+ */
+export interface TopicMatch {
+  topic: Topic;
+  matched_keywords: string[];
+  confidence: number;            // 0.0-1.0 based on keyword matches
+}
+
+/**
+ * Domain categories for organization
+ */
+export enum Domain {
+  PHYSICS = "physics",
+  MATHEMATICS = "mathematics",
+  CHEMISTRY = "chemistry",
+  BIOLOGY = "biology",
+  MEDICINE = "medicine",
+  HISTORY = "history",
+  LAW = "law",
+  CULTURE = "culture",
+  PSYCHOLOGY = "psychology",
+  PHILOSOPHY = "philosophy",
+  TECHNOLOGY = "technology",
+  ECONOMICS = "economics",
+  POLITICS = "politics",
+  GEOGRAPHY = "geography",
+  LINGUISTICS = "linguistics",
+  ART = "art",
+  RELIGION = "religion",
+  SPORTS = "sports",
+  GENERAL = "general"
+}
+
+/**
+ * Auto-populated topic database
+ * Extracted from token registry semantic_patterns
+ */
+export const TOPIC_DATABASE: Topic[] = [
+  // ============================================
+  // PHYSICS
+  // ============================================
+  {
+    id: "physics_constants",
+    name: "Physical Constants",
+    domain: Domain.PHYSICS,
+    keywords: [
+      "speed of light",
+      "gravitational constant",
+      "planck constant",
+      "avogadro constant",
+      "boltzmann constant",
+      "electron mass",
+      "proton mass",
+      "neutron mass",
+      "fine structure constant",
+      "vacuum permittivity",
+      "c",
+      "G",
+      "h",
+      "k_B",
+      "N_A"
+    ],
+    related_tokens: [
+      "PhysicalConstantTT",
+      "UniversalFactTT",
+      "ScientificFactTT"
+    ],
+    verification_priority: 0.95,
+    description: "Fundamental physical constants that are invariant"
+  },
+  {
+    id: "physics_mechanics",
+    name: "Classical Mechanics",
+    domain: Domain.PHYSICS,
+    keywords: [
+      "force",
+      "mass",
+      "acceleration",
+      "velocity",
+      "momentum",
+      "energy",
+      "kinetic",
+      "potential",
+      "newton",
+      "F=ma",
+      "gravity",
+      "friction",
+      "inertia"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "PhysicalConstantTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.90,
+    description: "Classical mechanics and motion"
+  },
+  {
+    id: "physics_thermodynamics",
+    name: "Thermodynamics",
+    domain: Domain.PHYSICS,
+    keywords: [
+      "temperature",
+      "heat",
+      "entropy",
+      "enthalpy",
+      "thermodynamic",
+      "first law",
+      "second law",
+      "absolute zero",
+      "kelvin",
+      "celsius",
+      "fahrenheit"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "PhysicalConstantTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.90,
+    description: "Heat, energy, and thermodynamic processes"
+  },
+  {
+    id: "physics_quantum",
+    name: "Quantum Mechanics",
+    domain: Domain.PHYSICS,
+    keywords: [
+      "quantum",
+      "qubit",
+      "superposition",
+      "entanglement",
+      "wave function",
+      "schrodinger",
+      "heisenberg",
+      "uncertainty principle",
+      "planck",
+      "photon",
+      "electron orbital"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "PhysicalConstantTT",
+      "ProbabilisticTT"
+    ],
+    verification_priority: 0.92,
+    description: "Quantum physics and subatomic phenomena"
+  },
+  {
+    id: "physics_nuclear",
+    name: "Nuclear Physics",
+    domain: Domain.PHYSICS,
+    keywords: [
+      "thermonuclear",
+      "nuclear",
+      "fusion",
+      "fission",
+      "radioactive",
+      "decay",
+      "isotope",
+      "deuterium",
+      "tritium",
+      "uranium",
+      "plutonium",
+      "reactor"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "PhysicalConstantTT",
+      "HistoricalEventTT"
+    ],
+    verification_priority: 0.95,
+    description: "Nuclear reactions and radioactivity"
+  },
+  {
+    id: "physics_relativity",
+    name: "Relativity",
+    domain: Domain.PHYSICS,
+    keywords: [
+      "relativity",
+      "einstein",
+      "E=mc²",
+      "spacetime",
+      "time dilation",
+      "length contraction",
+      "special relativity",
+      "general relativity",
+      "schwarzschild",
+      "lorentz"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "PhysicalConstantTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.94,
+    description: "Special and general relativity"
+  },
+
+  // ============================================
+  // MATHEMATICS
+  // ============================================
+  {
+    id: "math_arithmetic",
+    name: "Arithmetic",
+    domain: Domain.MATHEMATICS,
+    keywords: [
+      "add",
+      "subtract",
+      "multiply",
+      "divide",
+      "plus",
+      "minus",
+      "times",
+      "sum",
+      "product",
+      "quotient",
+      "difference",
+      "2+2",
+      "1+1"
+    ],
+    related_tokens: [
+      "MathematicalTT",
+      "NumericalTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.99,
+    description: "Basic arithmetic operations"
+  },
+  {
+    id: "math_algebra",
+    name: "Algebra",
+    domain: Domain.MATHEMATICS,
+    keywords: [
+      "equation",
+      "variable",
+      "solve",
+      "x",
+      "y",
+      "polynomial",
+      "quadratic",
+      "linear",
+      "exponent",
+      "logarithm",
+      "square root"
+    ],
+    related_tokens: [
+      "MathematicalTT",
+      "LogicalTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.97,
+    description: "Algebraic equations and operations"
+  },
+  {
+    id: "math_geometry",
+    name: "Geometry",
+    domain: Domain.MATHEMATICS,
+    keywords: [
+      "triangle",
+      "circle",
+      "square",
+      "rectangle",
+      "angle",
+      "perpendicular",
+      "parallel",
+      "pythagoras",
+      "euclidean",
+      "area",
+      "volume",
+      "perimeter"
+    ],
+    related_tokens: [
+      "MathematicalTT",
+      "UniversalFactTT",
+      "AxiomaticTT"
+    ],
+    verification_priority: 0.96,
+    description: "Geometric shapes and spatial relationships"
+  },
+  {
+    id: "math_calculus",
+    name: "Calculus",
+    domain: Domain.MATHEMATICS,
+    keywords: [
+      "derivative",
+      "integral",
+      "limit",
+      "differential",
+      "calculus",
+      "newton",
+      "leibniz",
+      "slope",
+      "rate of change",
+      "antiderivative"
+    ],
+    related_tokens: [
+      "MathematicalTT",
+      "ScientificFactTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.94,
+    description: "Differential and integral calculus"
+  },
+
+  // ============================================
+  // HISTORY
+  // ============================================
+  {
+    id: "history_american_revolution",
+    name: "American Revolution",
+    domain: Domain.HISTORY,
+    keywords: [
+      "american revolution",
+      "1776",
+      "independence",
+      "declaration",
+      "washington",
+      "jefferson",
+      "colonies",
+      "british",
+      "revolutionary war"
+    ],
+    related_tokens: [
+      "HistoricalEventTT",
+      "DateTT",
+      "GeographicalTT"
+    ],
+    verification_priority: 0.85,
+    description: "American Revolutionary War and independence"
+  },
+  {
+    id: "history_world_war_2",
+    name: "World War II",
+    domain: Domain.HISTORY,
+    keywords: [
+      "world war ii",
+      "ww2",
+      "wwii",
+      "hitler",
+      "nazi",
+      "holocaust",
+      "pearl harbor",
+      "d-day",
+      "1939",
+      "1945",
+      "atomic bomb"
+    ],
+    related_tokens: [
+      "HistoricalEventTT",
+      "DateTT",
+      "GeographicalTT"
+    ],
+    verification_priority: 0.90,
+    description: "World War II events and history"
+  },
+
+  // ============================================
+  // MEDICINE & BIOLOGY
+  // ============================================
+  {
+    id: "medicine_anatomy",
+    name: "Human Anatomy",
+    domain: Domain.MEDICINE,
+    keywords: [
+      "heart",
+      "brain",
+      "lung",
+      "liver",
+      "kidney",
+      "organ",
+      "muscle",
+      "bone",
+      "blood",
+      "artery",
+      "vein",
+      "nerve"
+    ],
+    related_tokens: [
+      "MedicalFactTT",
+      "ScientificFactTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.92,
+    description: "Human body anatomy and physiology"
+  },
+  {
+    id: "biology_evolution",
+    name: "Evolution",
+    domain: Domain.BIOLOGY,
+    keywords: [
+      "evolution",
+      "darwin",
+      "natural selection",
+      "species",
+      "adaptation",
+      "mutation",
+      "genetic",
+      "survival of the fittest",
+      "common ancestor"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "HistoricalEventTT",
+      "ProbabilisticTT"
+    ],
+    verification_priority: 0.88,
+    description: "Theory of evolution and natural selection"
+  },
+  {
+    id: "biology_genetics",
+    name: "Genetics",
+    domain: Domain.BIOLOGY,
+    keywords: [
+      "dna",
+      "rna",
+      "gene",
+      "chromosome",
+      "genome",
+      "genetic",
+      "heredity",
+      "allele",
+      "mutation",
+      "crispr"
+    ],
+    related_tokens: [
+      "ScientificFactTT",
+      "MedicalFactTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.93,
+    description: "Genetics and heredity"
+  },
+
+  // ============================================
+  // LAW & POLITICS
+  // ============================================
+  {
+    id: "law_constitutional",
+    name: "Constitutional Law",
+    domain: Domain.LAW,
+    keywords: [
+      "constitution",
+      "amendment",
+      "first amendment",
+      "second amendment",
+      "bill of rights",
+      "supreme court",
+      "constitutional",
+      "unconstitutional"
+    ],
+    related_tokens: [
+      "LegalFactTT",
+      "HistoricalEventTT",
+      "InstitutionalTT"
+    ],
+    verification_priority: 0.91,
+    description: "Constitutional law and amendments"
+  },
+
+  // ============================================
+  // CULTURE & LANGUAGE
+  // ============================================
+  {
+    id: "culture_traditions",
+    name: "Cultural Traditions",
+    domain: Domain.CULTURE,
+    keywords: [
+      "tradition",
+      "custom",
+      "ritual",
+      "ceremony",
+      "festival",
+      "celebration",
+      "cultural",
+      "heritage",
+      "folklore"
+    ],
+    related_tokens: [
+      "CulturalNormTT",
+      "HistoricalEventTT",
+      "ContextualTT"
+    ],
+    verification_priority: 0.60,
+    description: "Cultural practices and traditions"
+  },
+
+  // ============================================
+  // PHILOSOPHY & RELIGION
+  // ============================================
+  {
+    id: "philosophy_ethics",
+    name: "Ethics & Morality",
+    domain: Domain.PHILOSOPHY,
+    keywords: [
+      "moral",
+      "ethical",
+      "right",
+      "wrong",
+      "duty",
+      "ought",
+      "virtue",
+      "justice",
+      "good",
+      "evil"
+    ],
+    related_tokens: [
+      "EthicalTT",
+      "PhilosophicalTT",
+      "SubjectiveTT"
+    ],
+    verification_priority: 0.50,
+    description: "Ethics, morality, and moral philosophy"
+  },
+  {
+    id: "philosophy_logic",
+    name: "Logic & Reasoning",
+    domain: Domain.PHILOSOPHY,
+    keywords: [
+      "logic",
+      "reason",
+      "argument",
+      "premise",
+      "conclusion",
+      "valid",
+      "invalid",
+      "sound",
+      "fallacy",
+      "syllogism"
+    ],
+    related_tokens: [
+      "LogicalTT",
+      "PhilosophicalTT",
+      "UniversalFactTT"
+    ],
+    verification_priority: 0.85,
+    description: "Logical reasoning and argumentation"
+  },
+
+  // ============================================
+  // GENERAL / META
+  // ============================================
+  {
+    id: "general_ai_systems",
+    name: "AI Systems",
+    domain: Domain.TECHNOLOGY,
+    keywords: [
+      "ai",
+      "artificial intelligence",
+      "machine learning",
+      "neural network",
+      "llm",
+      "gpt",
+      "claude",
+      "chatbot",
+      "model"
+    ],
+    related_tokens: [
+      "MetaSystemTT",
+      "MetaCapabilityTT",
+      "TechnicalTT"
+    ],
+    verification_priority: 0.70,
+    description: "Artificial intelligence and machine learning systems"
+  }
+];
+
+/**
+ * Topic Detection Service
+ */
+export class TopicDetector {
+  private topics: Map<string, Topic>;
+
+  constructor() {
+    this.topics = new Map();
+    // Load all topics into map
+    TOPIC_DATABASE.forEach(topic => {
+      this.topics.set(topic.id, topic);
+    });
+  }
+
+  /**
+   * Detect topics in text
+   * Returns all matching topics sorted by confidence
+   */
+  detectTopics(text: string): TopicMatch[] {
+    const normalized = text.toLowerCase();
+    const matches: TopicMatch[] = [];
+
+    for (const topic of this.topics.values()) {
+      const matched_keywords: string[] = [];
+
+      // Check each keyword
+      for (const keyword of topic.keywords) {
+        if (normalized.includes(keyword.toLowerCase())) {
+          matched_keywords.push(keyword);
+        }
+      }
+
+      // If we found matches, calculate confidence
+      if (matched_keywords.length > 0) {
+        const confidence = matched_keywords.length / topic.keywords.length;
+        matches.push({
+          topic,
+          matched_keywords,
+          confidence
+        });
+      }
+    }
+
+    // Sort by confidence (highest first)
+    return matches.sort((a, b) => b.confidence - a.confidence);
+  }
+
+  /**
+   * Get highest priority topic from matches
+   * Returns the full TopicMatch (not just Topic) for use in ChemistryResult
+   */
+  getHighestPriorityTopic(matches: TopicMatch[]): TopicMatch | null {
+    if (matches.length === 0) return null;
+
+    // Sort by verification_priority
+    const sorted = [...matches].sort((a, b) =>
+      b.topic.verification_priority - a.topic.verification_priority
+    );
+
+    return sorted[0];  // Return full TopicMatch, not just topic
+  }
+
+  /**
+   * Get all topics by domain
+   */
+  getTopicsByDomain(domain: Domain): Topic[] {
+    return Array.from(this.topics.values())
+      .filter(topic => topic.domain === domain);
+  }
+
+  /**
+   * Get topic by ID
+   */
+  getTopic(id: string): Topic | undefined {
+    return this.topics.get(id);
+  }
+
+  /**
+   * Get all topics
+   */
+  getAllTopics(): Topic[] {
+    return Array.from(this.topics.values());
+  }
+
+  /**
+   * Get statistics about topic database
+   */
+  stats(): {
+    total_topics: number;
+    by_domain: Record<string, number>;
+    high_priority_topics: number;
+  } {
+    const by_domain: Record<string, number> = {};
+    let high_priority_topics = 0;
+
+    for (const topic of this.topics.values()) {
+      // Count by domain
+      by_domain[topic.domain] = (by_domain[topic.domain] || 0) + 1;
+
+      // Count high priority (>= 0.9)
+      if (topic.verification_priority >= 0.9) {
+        high_priority_topics++;
+      }
+    }
+
+    return {
+      total_topics: this.topics.size,
+      by_domain,
+      high_priority_topics
+    };
+  }
+}
+
+// Export singleton instance
+export const topicDetector = new TopicDetector();
